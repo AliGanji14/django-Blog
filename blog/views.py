@@ -7,8 +7,7 @@ from .forms import NewPostForm
 
 
 def post_list_view(request):
-    posts_list = Post.objects.filter(
-        status='pub').order_by('datetime_modified')
+    posts_list = Post.objects.filter(status='pub')
     return render(request, 'blog/posts_list.html', {'posts_list': posts_list})
 
 
@@ -26,3 +25,23 @@ def post_new_view(request):
     else:
         form = NewPostForm()
     return render(request, 'blog/post_create.html', {'form': form})
+
+
+def post_update_view(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    form = NewPostForm(request.POST or None, instance=post)
+
+    if form.is_valid():
+        form.save()
+        return redirect(post)
+    return render(request, 'blog/post_update.html', {'form': form})
+
+
+def post_delete_view(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == "POST":
+        post.delete()
+        return redirect('post_list')
+        
+    return render(request, 'blog/post_delete.html', {'post': post})
