@@ -1,10 +1,14 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.contrib.auth.models import User
+
 from .models import Post
+from .forms import NewPostForm
 
 
 def post_list_view(request):
-    posts_list = Post.objects.filter(status='pub').order_by('datetime_modified')
+    posts_list = Post.objects.filter(
+        status='pub').order_by('datetime_modified')
     return render(request, 'blog/posts_list.html', {'posts_list': posts_list})
 
 
@@ -15,9 +19,10 @@ def post_detail_view(request, pk):
 
 def post_new_view(request):
     if request.method == "POST":
-        post_text = request.POST.get('title')
-        post_title = request.POST.get('text')
-        Post.objects.create(title=post_title, text=post_text,
-                            author=None, stauts='pub')
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('post_list')
     else:
-        return render(request, 'blog/post_create.html')
+        form = NewPostForm()
+    return render(request, 'blog/post_create.html', {'form': form})
