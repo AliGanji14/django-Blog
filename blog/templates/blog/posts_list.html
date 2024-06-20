@@ -15,9 +15,9 @@ Post List
                     <h5 class="card-title">{{post.title}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted small py-2">{{post.datetime_created|timesince}}</h6>
                     <p class="card-text py-3">{{post.text|truncatewords:35}}</p>
-                    <div class="btn btn-sm btn-success"></div>
+                    <a href="{{ post.get_absolute_url }}" class="btn btn-sm btn-success">Read More</a>
                 </div>
-            </div>
+            </div> 
             {% endfor %}
         </div>
         <div class="col-3">
