@@ -1,10 +1,6 @@
-from hmac import new
-
-from django.views import generic
-from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .models import Post
 from .forms import PostForm, CommentForm
@@ -38,7 +34,7 @@ def post_detail_view(request, pk):
     })
 
 
-@login_required()
+@login_required
 def post_create_view(request):
     if request.method == "POST":
         form = PostForm(request.POST)
@@ -56,6 +52,9 @@ def post_create_view(request):
 def post_update_view(request, pk):
     post = get_object_or_404(Post, pk=pk)
 
+    if post.author.id != request.user.id:
+        return HttpResponseForbidden("You are not allowed to delete this post.")
+
     if request.method == 'POST':
         form = PostForm(request.POST or None, instance=post)
         if form.is_valid():
@@ -66,8 +65,12 @@ def post_update_view(request, pk):
     return render(request, 'blog/post_update.html', {'form': form})
 
 
+@login_required
 def post_delete_view(request, pk):
     post = get_object_or_404(Post, pk=pk)
+
+    if post.author.id != request.user.id:
+        return HttpResponseForbidden("You are not allowed to delete this post.")
 
     if request.method == "POST":
         post.delete()
