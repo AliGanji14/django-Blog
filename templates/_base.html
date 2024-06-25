@@ -31,7 +31,7 @@
         </div>
         <div class="mx-2 text-white">
             {% if user.is_authenticated %}
-                <span>Welcome {{ user.username }} |</span>
+                <span>welcome {{ user.username }} |</span>
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-link p-0 text-light" style="display:inline;">logout</button>
