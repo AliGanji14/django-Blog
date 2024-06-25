@@ -1,37 +1,76 @@
+from hmac import new
+
 from django.views import generic
 from django.urls import reverse_lazy
-
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 
 
-class PostListView(generic.ListView):
-    template_name = 'blog/posts_list.html'
-    context_object_name = 'posts_list'
+def post_list_view(request):
+    posts = Post.objects.filter(status='pub')
 
-    def get_queryset(self):
-        return Post.objects.filter(status='pub')
+    return render(request, 'blog/posts_list.html', {'posts': posts})
 
 
-class PostDetailView(generic.DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-    context_object_name = 'post'
+@login_required
+def post_detail_view(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post_comments = post.comments.all()
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.user = request.user
+            new_comment.save()
+            comment_form = CommentForm()
+    else:
+        comment_form = CommentForm()
+    return render(request, 'blog/post_detail.html', {
+        'post': post,
+        'comments': post_comments,
+        'comment_form': comment_form,
+    })
 
 
-class PostCreateView(generic.CreateView):
-    form_class = PostForm
-    template_name = 'blog/post_create.html'
+@login_required()
+def post_create_view(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.author = request.user
+            new_form.save()
+            return redirect(new_form)
+    form = PostForm()
+
+    return render(request, 'blog/post_create.html', {'form': form})
 
 
-class PostUpdateView(generic.UpdateView):
-    model = Post
-    fields = ['title', 'text', 'status']
-    template_name = 'blog/post_update.html'
+@login_required
+def post_update_view(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        form = PostForm(request.POST or None, instance=post)
+        if form.is_valid():
+            update_form = form.save()
+            return redirect(update_form)
+
+    form = PostForm(instance=post)
+    return render(request, 'blog/post_update.html', {'form': form})
 
 
-class PostDeleteView(generic.DeleteView):
-    model = Post
-    template_name = 'blog/post_delete.html'
-    success_url = reverse_lazy('post_list')
+def post_delete_view(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == "POST":
+        post.delete()
+        return redirect('post_list')
+
+    return render(request, 'blog/post_delete.html', {'post': post})

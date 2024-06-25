@@ -1,5 +1,7 @@
 {% extends '_base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block page_title %}Post Update{% endblock page_title %}
 
 
@@ -11,7 +13,7 @@
                 <h3>Add new Post:</h3>
                 <form method="POST">
                     {% csrf_token %}
-                    {{form.as_p}}
+                    {{form|crispy}}
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
             </div>
