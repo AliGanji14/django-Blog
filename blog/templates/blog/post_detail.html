@@ -20,7 +20,8 @@
                 <h3>Comments:</h3>
                 {% for comment in comments %}
                     <div class="card shadow my-3 p-5">
-                        {{ comment.user }} :{{ comment.comment }}
+                        {{ comment.user }} : {{ comment.comment }}
+                    <h6 class="card-subtitle mb-2 text-muted small py-2">{{ comment.datetime_created|timesince }}</h6>
                     </div>
                 {% endfor %}
                 <div class="card shadow my-3 p-5">
@@ -39,7 +40,7 @@
                     <div class="card-body">
                         <p class="card-text">We love python and django. So we created a blog site to share our
                             thoughts</p>
-                        <a href="#" class="btn btn-sm btn-danger">
+                        <a href="https://www.djangoproject.com/" class="btn btn-sm btn-danger">
                             More...
                         </a>
                     </div>

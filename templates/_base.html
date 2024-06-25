@@ -19,13 +19,12 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">CodingYar.com</a>
+        <a class="navbar-brand" href="{% url 'home' %}">CodingYar.com</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation"><span
                 class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
                 <a class="nav-link active" aria-current="page" href="{% url 'post_list' %}">Blog</a>
                 <a class="nav-link active" aria-current="page" href="{% url 'post_create' %}">New Post</a>
             </div>
@@ -35,11 +34,11 @@
                 <span>Welcome {{ user.username }} |</span>
                 <form action="{% url 'logout' %}" method="post" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-link p-0 text-light" style="display:inline;">Log Out</button>
+                    <button type="submit" class="btn btn-link p-0 text-light" style="display:inline;">logout</button>
                 </form>
             {% else %}
-                <a class="text-light" href="{% url 'login' %}">Log In</a> |
-                <a class="text-light" href="{% url 'signup' %}">Sign Up</a>
+                <a class="text-light" href="{% url 'login' %}">Login</a> |
+                <a class="text-light" href="{% url 'signup' %}">signup</a>
             {% endif %}
         </div>
 

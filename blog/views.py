@@ -11,7 +11,7 @@ from .forms import PostForm, CommentForm
 
 
 def post_list_view(request):
-    posts = Post.objects.filter(status='pub')
+    posts = Post.objects.filter(status='pub').order_by('-datetime_created')
 
     return render(request, 'blog/posts_list.html', {'posts': posts})
 
